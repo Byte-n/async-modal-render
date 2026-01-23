@@ -1,13 +1,13 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as ReactDom from 'react-dom';
 
 /**
  * 安全地获取 createRoot 函数
  * 兼容处理：某些环境下从 'react-dom' 获取，某些需要从 'react-dom/client' 获取
  */
 function getCreateRoot() {
-  if (typeof (ReactDOM as any).createRoot === 'function') {
-    return (ReactDOM as any).createRoot;
+  if (typeof (ReactDom as any).createRoot === 'function') {
+    return (ReactDom as any).createRoot;
   }
 
   try {
@@ -56,12 +56,12 @@ export function staticRender(
     };
   } else {
     // React 16/17 逻辑
-    // React 19 已经彻底删除了 ReactDOM.render
-    const legacyRender = (ReactDOM as any).render;
+    // React 19 已经彻底删除了 ReactDom.render
+    const legacyRender = (ReactDom as any).render;
     if (typeof legacyRender === 'function') {
       legacyRender(element, container);
       return () => {
-        (ReactDOM as any).unmountComponentAtNode(container);
+        (ReactDom as any).unmountComponentAtNode(container);
       };
     } else {
       throw new Error('当前 React 版本不支持 render 或 createRoot，请检查依赖。');
