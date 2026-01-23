@@ -15,7 +15,9 @@ export interface AsyncModalRender {
 }
 
 export interface AsyncModalRenderFactory {
-  (...args: Parameters<AsyncModalRender>): () => ReturnType<AsyncModalRender>;
+  <D extends AsyncModalProps>(Comp: React.ComponentType<D>, props?: ComputeAsyncModalProps<D>): () => Promise<
+    D['onOk'] extends (v: infer R) => void ? R : never
+  >;
 }
 
 export interface UseAsyncModalRenderReturn {
