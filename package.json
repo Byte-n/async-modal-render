@@ -1,6 +1,6 @@
 {
   "name": "async-modal-render",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A lightweight library that promisifies React modal operations, allowing elegant handling of modal interactions using async/await syntax",
   "keywords": [
     "react",

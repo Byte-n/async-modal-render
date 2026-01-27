@@ -8,12 +8,12 @@
 
 | 特性        | Normal (传统方式)     | NiceModal        | Async Modal Render       |
 |:----------|:------------------|:-----------------|:-------------------------|
-| **状态管理**  | 手动 (useState)     | 内部 Hook          | **自动 (无需 State)**        |
+| **状态管理**  | 手动 (useState)     | 全局状态管理 (Hook 访问) | **自动 (无需 State)**        |
 | **组件挂载**  | JSX 显式挂载          | 需要 Wrapper 注册    | **函数调用自动挂载**             |
 | **逻辑流程**  | 分散 (onClick/onOk) | 基于 Promise       | **基于 Promise 的线性流**      |
 | **组件侵入性** | 低                 | 高 (需引入 useModal) | **零 (纯净组件)**             |
 | **类型支持**  | 手动定义              | 部分支持             | **全自动推导 (Props/Result)** |
-| **生命周期**  | 手动控制              | 需手动 remove       | **自动销毁 / 按需持久化**         |
+| **生命周期**  | 手动控制              | 默认保留 (需手动 remove) | **默认销毁 / 按需持久化**         |
 | **代码量**   | 繁琐                | 中等               | **最简**                   |
 
 ---
@@ -104,29 +104,32 @@ await render(
 
 ### 2.2 组件解耦与零依赖 (Decoupling)
 
-**NiceModal:** UI 组件内部必须引入 `nice-modal-react` 库，并使用 `useModal` Hook。这使得 UI 组件与特定库耦合，难以复用。
-**Async Modal Render:** UI 组件完全不需要引入 `async-modal-render`。它只是一个普通的 React 组件，通过 Props
-接收回调。库的逻辑完全封装在调用层。
+**NiceModal:** UI 组件内部必须引入 `nice-modal-react` 库，并使用 `useModal` Hook。这使得 UI 组件与特定库深度耦合，难以在不使用 NiceModal 的场景下复用（例如直接作为常规组件嵌入页面）。
 
-如果组件一开始就是用 `NiceModal.create` 创建的，则无法直接调用、或直接传递给第三方组件、框架使用，必须依赖`NiceModal.show`调用
+**Async Modal Render:** UI 组件完全不需要引入 `async-modal-render`。它只是一个普通的 React 组件，通过 Props 接收回调。库的逻辑完全封装在调用层，实现真正的非侵入式设计。
+
+如果组件一开始就是用 `NiceModal.create` 创建的，则无法直接调用、或直接传递给第三方组件、框架使用，必须依赖 `NiceModal.show` 调用。
 
 ```tsx | pure
 // 使用 NiceModal 函数包装组件
 const SelectUserModal = NiceModal.create((props) => {
-  const modal = useModal();
+  const modal = useModal(); // ❌ 强耦合：组件离开了 NiceModal 环境就失效了
   // 组件实现
-  return ...;
+  return <Xxxx>...</Xxxx>;
 });
 
 // ✅只能通过 `NiceModal.show` 调用 
 NiceModal.show(SelectUserModal, { ... })
 
-// ❌不能直接调用 （若非要使用，则需要传入与 NiceModal 耦合的 `id` `defaultVisible` `keepMounted`）
+// ❌不能直接调用 （若非要使用，则需要传入与 NiceModal 耦合的 `id` `defaultVisible` `keepMounted`，且在 NiceModal.Provider 组件下）
 <SelectUserModal ... />
 
 // ❌不能传递给第三方包, 内部会直接实例化 SelectUserModal
 import { register } from 'xxx';
 register('select-user', SelectUserModal)
+
+// ✅ 可以在其他组件中使用，不依赖任何 async-modal-render 的支持。此函数内部仅是做了 props 字段名称映射与TS类型约束
+const TempComp = withAsyncModalPropsMapper(Xxxx, ['onConfirm', 'onClose'])
 ```
 
 ### 2.3 自动生命周期管理 (Auto Lifecycle)

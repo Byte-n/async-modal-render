@@ -34,7 +34,7 @@ export function asyncModalRenderImp<D extends AsyncModalProps>(
       reject(realError);
       props?.onCancel?.(realError);
     };
-    dom = <Comp {...(props as ComponentProps<typeof Comp>)} key={incrKey} onOk={onOk} onCancel={onCancel} />;
+    dom = <Comp {...(props as ComponentProps<typeof Comp>)} key={incrKey++} onOk={onOk} onCancel={onCancel} />;
   });
   return [dom!, promise];
 }
