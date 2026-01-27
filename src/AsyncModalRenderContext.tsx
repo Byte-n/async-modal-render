@@ -9,6 +9,9 @@ export const AsyncModalRenderContext = React.createContext<AsyncModalContext>({
   renderFactory: () => {
     throw Error(`AsyncModalContext must be used within createRoot.`);
   },
+  destroy: () => {
+    throw Error(`AsyncModalContext must be used within createRoot.`);
+  },
 });
 
 /**
@@ -17,8 +20,8 @@ export const AsyncModalRenderContext = React.createContext<AsyncModalContext>({
  * @constructor
  */
 export function AsyncModalRenderProvider ({ children }: { children: React.ReactNode }) {
-  const { render, renderFactory, holder } = useAsyncModalRender();
-  const value = useMemo(() => ({ render, renderFactory }), []);
+  const { render, renderFactory, holder, destroy } = useAsyncModalRender();
+  const value = useMemo(() => ({ render, renderFactory, destroy }), [render, renderFactory, destroy]);
   return (
     <AsyncModalRenderContext.Provider value={value}>
       {children}

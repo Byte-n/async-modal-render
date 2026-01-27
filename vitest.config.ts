@@ -13,7 +13,7 @@ export default defineConfig({
       instances: [
         { browser: 'chromium' },
       ],
-      // headless: true
+      headless: true
     },
     setupFiles: ['./tests/setup.ts'],
   },

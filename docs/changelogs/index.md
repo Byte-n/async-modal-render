@@ -1,5 +1,25 @@
 # 更新日志
 
+## 0.0.5
+
+`2026-01-27`
+
+### 新增功能
+
+- 支持弹窗持久化渲染（Persistence），通过 `persistent` 和 `openField` 配置实现，提升复杂交互场景下的性能
+- 新增 `destroy` API，支持手动销毁指定的或全部持久化渲染的弹窗
+
+### 类型系统优化
+
+- 完善 `AsyncModalRenderOptions` 和 `AsyncModalDestroyOptions` 类型定义
+- 增强 `AsyncModalContext` 类型，包含 `destroy` 方法，确保上下文调用的一致性
+- 新增 `ExtractBooleanKeys` 工具类型，用于自动推导组件中可用于控制显隐的属性名
+
+### 文档与测试
+
+- 新增持久化渲染的详细 API 文档及使用示例
+- 为持久化（Persistence）和销毁（Destroy）功能添加了完整的自动化测试用例，确保功能稳定性
+
 ## 0.0.4
 
 `2026-01-23`

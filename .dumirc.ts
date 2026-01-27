@@ -16,6 +16,7 @@ export default defineConfig({
     nav: [
       { title: '快速开始', link: '/guide' },
       { title: '使用手册', link: '/components' },
+      { title: 'API', link: '/api' },
       { title: '更新日志', link: '/changelogs' },
     ],
     footer:
@@ -32,6 +33,10 @@ export default defineConfig({
       {
         text: '使用手册',
         link: '/components',
+      },
+      {
+        text: 'API',
+        link: '/api',
       },
       {
         text: '更新日志',

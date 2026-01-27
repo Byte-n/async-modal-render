@@ -2,6 +2,7 @@ import React from 'react';
 import { AsyncModalProps } from 'async-modal-render';
 
 export interface ModalProps extends AsyncModalProps {
+  open?: boolean;
   title?: React.ReactNode;
   children?: React.ReactNode;
   okText?: string;
@@ -13,6 +14,7 @@ export interface ModalProps extends AsyncModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({
+  open = true,
   title = '提示',
   children,
   okText = '确定',
@@ -24,6 +26,9 @@ const Modal: React.FC<ModalProps> = ({
   onOk,
   onCancel,
 }) => {
+  if (!open) {
+    return null;
+  }
   const handleMaskClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (maskClosable && e.target === e.currentTarget) {
       onCancel?.();
