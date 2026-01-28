@@ -48,9 +48,10 @@ const MyModalWrapper = NiceModal.create(() => {
 // \u518D\u901A\u8FC7 NiceModal.show \u8C03\u7528
 await NiceModal.show(MyModalWrapper, {})
 
-// Async Modal Render: \u2705 \u76F4\u63A5\u4F7F\u7528\uFF0C\u6216\u884C\u5185\u6620\u5C04
+// Async Modal Render: \u2705 props \u4EC5\u952E\u540D\u79F0\u6620\u5C04\uFF0C\u65E0\u8026\u5408\u4EE3\u7801\u3002\u82E5\u7B26\u5408 onOk\uFF0ConCancel \u952E\u540D\u79F0\uFF0C\u5219\u53EF\u4EE5\u76F4\u63A5\u4F7F\u7528
+const MyModalWrapper2 = withAsyncModalPropsMapper(MyCustomModal, ['onConfirm', 'onClose']);
 await render(
-  withAsyncModalPropsMapper(MyCustomModal, ['onConfirm', 'onClose']), // 'onConfirm', 'onClose' \u5177\u6709TS\u7C7B\u578B\u7EA6\u675F
+  MyModalWrapper2,
   { open: true }
 );
 `,paraId:9,tocIndex:6},{value:"NiceModal:",paraId:10,tocIndex:7},{value:" UI \u7EC4\u4EF6\u5185\u90E8\u5FC5\u987B\u5F15\u5165 ",paraId:10,tocIndex:7},{value:"nice-modal-react",paraId:10,tocIndex:7},{value:" \u5E93\uFF0C\u5E76\u4F7F\u7528 ",paraId:10,tocIndex:7},{value:"useModal",paraId:10,tocIndex:7},{value:" Hook\u3002\u8FD9\u4F7F\u5F97 UI \u7EC4\u4EF6\u4E0E\u7279\u5B9A\u5E93\u6DF1\u5EA6\u8026\u5408\uFF0C\u96BE\u4EE5\u5728\u4E0D\u4F7F\u7528 NiceModal \u7684\u573A\u666F\u4E0B\u590D\u7528\uFF08\u4F8B\u5982\u76F4\u63A5\u4F5C\u4E3A\u5E38\u89C4\u7EC4\u4EF6\u5D4C\u5165\u9875\u9762\uFF09\u3002",paraId:10,tocIndex:7},{value:"Async Modal Render:",paraId:11,tocIndex:7},{value:" UI \u7EC4\u4EF6\u5B8C\u5168\u4E0D\u9700\u8981\u5F15\u5165 ",paraId:11,tocIndex:7},{value:"async-modal-render",paraId:11,tocIndex:7},{value:"\u3002\u5B83\u53EA\u662F\u4E00\u4E2A\u666E\u901A\u7684 React \u7EC4\u4EF6\uFF0C\u901A\u8FC7 Props \u63A5\u6536\u56DE\u8C03\u3002\u5E93\u7684\u903B\u8F91\u5B8C\u5168\u5C01\u88C5\u5728\u8C03\u7528\u5C42\uFF0C\u5B9E\u73B0\u771F\u6B63\u7684\u975E\u4FB5\u5165\u5F0F\u8BBE\u8BA1\u3002",paraId:11,tocIndex:7},{value:"\u5982\u679C\u7EC4\u4EF6\u4E00\u5F00\u59CB\u5C31\u662F\u7528 ",paraId:12,tocIndex:7},{value:"NiceModal.create",paraId:12,tocIndex:7},{value:" \u521B\u5EFA\u7684\uFF0C\u5219\u65E0\u6CD5\u76F4\u63A5\u8C03\u7528\u3001\u6216\u76F4\u63A5\u4F20\u9012\u7ED9\u7B2C\u4E09\u65B9\u7EC4\u4EF6\u3001\u6846\u67B6\u4F7F\u7528\uFF0C\u5FC5\u987B\u4F9D\u8D56 ",paraId:12,tocIndex:7},{value:"NiceModal.show",paraId:12,tocIndex:7},{value:" \u8C03\u7528\u3002",paraId:12,tocIndex:7},{value:`// \u4F7F\u7528 NiceModal \u51FD\u6570\u5305\u88C5\u7EC4\u4EF6
