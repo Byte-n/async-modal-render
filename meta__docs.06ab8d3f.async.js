@@ -197,7 +197,7 @@ function MyModal () { ... }
 // NiceModal: \u274C \u5FC5\u987B\u5B9A\u4E49 Wrapper
 const MyModalWrapper = NiceModal.create(() => {
   const modal = useModal(); // \u8026\u5408
-  return <MyModal visible={modal.visible} onOk={modal.resolve}/>;
+  return <MyModal open={modal.visible} onConfirm={modal.resolve} .../>;
 });
 // \u518D\u901A\u8FC7 NiceModal.show \u8C03\u7528
 await NiceModal.show(MyModalWrapper, {})
