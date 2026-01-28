@@ -228,9 +228,38 @@ register('select-user', SelectUserModal)
 // \u2705 \u53EF\u4EE5\u5728\u5176\u4ED6\u7EC4\u4EF6\u4E2D\u4F7F\u7528\uFF0C\u4E0D\u4F9D\u8D56\u4EFB\u4F55 async-modal-render \u7684\u652F\u6301\u3002\u6B64\u51FD\u6570\u5185\u90E8\u4EC5\u662F\u505A\u4E86 props \u5B57\u6BB5\u540D\u79F0\u6620\u5C04\u4E0ETS\u7C7B\u578B\u7EA6\u675F
 const TempComp = withAsyncModalPropsMapper(Xxxx, ['onConfirm', 'onClose'])
 `,paraId:13,tocIndex:7},{value:"NiceModal:",paraId:14,tocIndex:8},{value:" \u9ED8\u8BA4\u884C\u4E3A\u662F\u201C\u4FDD\u7559\u201D\u3002\u5173\u95ED\u5F39\u7A97\u540E\uFF0CDOM \u8282\u70B9\u4ECD\u7136\u5B58\u5728\uFF0C\u5FC5\u987B\u663E\u5F0F\u8C03\u7528 ",paraId:14,tocIndex:8},{value:"modal.remove()",paraId:14,tocIndex:8},{value:` \u624D\u80FD\u9500\u6BC1\u3002\u5BB9\u6613\u9020\u6210\u5185\u5B58\u6CC4\u6F0F\u3002
-`,paraId:14,tocIndex:8},{value:"Async Modal Render:",paraId:14,tocIndex:8},{value:" \u9ED8\u8BA4\u884C\u4E3A\u662F\u201C\u9500\u6BC1\u201D\u3002",paraId:14,tocIndex:8},{value:"render",paraId:14,tocIndex:8},{value:" Promise \u7ED3\u675F\u540E\uFF0C\u5E93\u4F1A\u81EA\u52A8\u5378\u8F7D\u7EC4\u4EF6\u5E76\u6E05\u7406 DOM\u3002\u5929\u7136\u675C\u7EDD\u5185\u5B58\u6CC4\u6F0F\u3002",paraId:14,tocIndex:8},{value:"NiceModal:",paraId:15,tocIndex:9},{value:` \u9ED8\u8BA4\u4E0D\u9500\u6BC1\u5BFC\u81F4\u72B6\u6001\u6B8B\u7559\uFF0C\u9700\u8981\u624B\u52A8\u91CD\u7F6E\u3002
-`,paraId:15,tocIndex:9},{value:"Async Modal Render:",paraId:15,tocIndex:9},{value:" \u9ED8\u8BA4\u9500\u6BC1\u4FDD\u8BC1\u4E86\u6BCF\u6B21\u6253\u5F00\u90FD\u662F\u5168\u65B0\u7684\u72B6\u6001 (Reset)\u3002\u540C\u65F6\u63D0\u4F9B\u4E86\u663E\u5F0F\u7684\u6301\u4E45\u5316\u9009\u9879 (",paraId:15,tocIndex:9},{value:"persistent",paraId:15,tocIndex:9},{value:` key)
-\uFF0C\u63A7\u5236\u6743\u66F4\u7CBE\u51C6\u3002`,paraId:15,tocIndex:9},{value:"async-modal-render",paraId:16,tocIndex:10},{value:" \u63D0\u4F9B\u4E86\u4F18\u79C0\u7684 TypeScript \u7C7B\u578B\u63A8\u5BFC\u80FD\u529B\u3002",paraId:16,tocIndex:10},{value:"\u5165\u53C2\u7C7B\u578B\u7EA6\u675F",paraId:17,tocIndex:10},{value:"\uFF1A\u81EA\u52A8\u68C0\u67E5\u4F20\u5165\u7684 ",paraId:17,tocIndex:10},{value:"props",paraId:17,tocIndex:10},{value:" \u662F\u5426\u7B26\u5408\u7EC4\u4EF6\u5B9A\u4E49\u3002",paraId:17,tocIndex:10},{value:"\u8FD4\u56DE\u503C\u7C7B\u578B\u63A8\u5BFC",paraId:17,tocIndex:10},{value:"\uFF1A",paraId:17,tocIndex:10},{value:"await render(...)",paraId:17,tocIndex:10},{value:" \u7684\u8FD4\u56DE\u503C\u7C7B\u578B\u4F1A\u81EA\u52A8\u63A8\u5BFC\u4E3A\u7EC4\u4EF6\u56DE\u8C03\u51FD\u6570\u7684\u53C2\u6570\u7C7B\u578B\u3002",paraId:17,tocIndex:10},{value:`// \u2705 \u81EA\u52A8\u63A8\u5BFC result \u7C7B\u578B\uFF0C\u65E0\u9700\u624B\u52A8\u6CDB\u578B
+`,paraId:14,tocIndex:8},{value:"Async Modal Render:",paraId:14,tocIndex:8},{value:" \u9ED8\u8BA4\u884C\u4E3A\u662F\u201C\u9500\u6BC1\u201D\u3002",paraId:14,tocIndex:8},{value:"render",paraId:14,tocIndex:8},{value:" Promise \u7ED3\u675F\u540E\uFF0C\u5E93\u4F1A\u81EA\u52A8\u5378\u8F7D\u7EC4\u4EF6\u5E76\u6E05\u7406 DOM\u3002\u5929\u7136\u675C\u7EDD\u5185\u5B58\u6CC4\u6F0F\u3002\u9ED8\u8BA4\u9500\u6BC1\u4FDD\u8BC1\u4E86\u6BCF\u6B21\u6253\u5F00\u90FD\u662F\u5168\u65B0\u7684\u72B6\u6001 (Reset)\u3002\u540C\u65F6\u63D0\u4F9B\u4E86\u663E\u5F0F\u7684\u6301\u4E45\u5316\u9009\u9879 (",paraId:14,tocIndex:8},{value:"persistent",paraId:14,tocIndex:8},{value:` key)
+\uFF0C\u63A7\u5236\u6743\u66F4\u7CBE\u51C6\u3002`,paraId:14,tocIndex:8},{value:`// NiceModal
+const SelectUserModal = NiceModal.create((props) => {
+  const modal = useModal(); // \u274C \u5F3A\u8026\u5408\uFF1A\u7EC4\u4EF6\u79BB\u5F00\u4E86 NiceModal \u73AF\u5883\u5C31\u5931\u6548\u4E86
+  // \u7EC4\u4EF6\u5B9E\u73B0
+  return <Xxxx 
+    onClose={() => {
+      modal.resolve(); // \u89E6\u53D1 Promise \u72B6\u6001\u6D41\u8F6C
+      // modal.hide() // \u4EC5\u4FEE\u6539 model.visible
+      modal.remove(); // \u5378\u8F7D\u5F39\u7A97
+    }}
+  >...</Xxxx>;
+});
+
+// \u2705\u53EA\u80FD\u901A\u8FC7 \`NiceModal.show\` \u8C03\u7528 
+NiceModal.show(SelectUserModal, { ... })
+
+// async-modal-render
+// \u663E\u793A\u7684\u6301\u4E45\u5316\u9009\u9879
+render(MyModal, { ... }, { persistent: 'unique-modal', openField: 'open' })
+
+// \u9700\u8981\u624B\u52A8\u5378\u8F7D\uFF0C\u6216 \u5F53\u524D\u7EC4\u4EF6\u51FD\u6570\u58F0\u660E\u5378\u8F7D\u540E\uFF0C\u81EA\u52A8\u5378\u8F7D\u3002
+destroy({ persistent: 'unique-modal' })
+// useAsyncModalRenderContext\u7684render\u5BF9\u5E94AsyncModalRenderProvider
+// todo: \u540E\u7EED\u5F15\u5165 destroyStrategy \u914D\u7F6E\u9879\u6765\u63A7\u5236\u5378\u8F7D\u65F6\u673A\uFF0C\u4EE5\u4FBF\u5B9E\u73B0\u5168\u5C40\u3001\u5C40\u90E8\u7684\u6301\u4E45\u5316\u914D\u7F6E\u3002
+`,paraId:15,tocIndex:8},{value:"async-modal-render",paraId:16,tocIndex:9},{value:" \u63D0\u4F9B\u4E86\u4F18\u79C0\u7684 TypeScript \u7C7B\u578B\u63A8\u5BFC\u80FD\u529B\u3002",paraId:16,tocIndex:9},{value:"\u5165\u53C2\u7C7B\u578B\u7EA6\u675F",paraId:17,tocIndex:9},{value:"\uFF1A\u81EA\u52A8\u68C0\u67E5\u4F20\u5165\u7684 ",paraId:17,tocIndex:9},{value:"props",paraId:17,tocIndex:9},{value:" \u662F\u5426\u7B26\u5408\u7EC4\u4EF6\u5B9A\u4E49\u3002",paraId:17,tocIndex:9},{value:"\u8FD4\u56DE\u503C\u7C7B\u578B\u63A8\u5BFC",paraId:17,tocIndex:9},{value:"\uFF1A",paraId:17,tocIndex:9},{value:"await render(...)",paraId:17,tocIndex:9},{value:" \u7684\u8FD4\u56DE\u503C\u7C7B\u578B\u4F1A\u81EA\u52A8\u63A8\u5BFC\u4E3A\u7EC4\u4EF6\u56DE\u8C03\u51FD\u6570\u7684\u53C2\u6570\u7C7B\u578B\u3002",paraId:17,tocIndex:9},{value:`// NiceModal.show<Result, Component Props, Props>
+// \u901A\u8FC7\u7B2C\u4E00\u4E2A\u6CDB\u578B\u6307\u5B9A\u8FD4\u56DE\u503C\u7C7B\u578B\uFF0C\u8BE5\u7C7B\u578B\u4E0Emodal.resolve\u7684\u8FD4\u7C7B\u578B\u65E0\u7EA6\u675F\uFF0C
+// \u5373modal.resolve('string') \u6539\u6210 modal.resolve(90), \u8FD9\u91CC\u7684\u5F15\u7528\u4E5F\u4E0D\u4F1A\u5904\u7F5ATS\u7684\u7C7B\u578B\u4EA4\u9A8C\u9519\u8BEF
+// \u5F53\u524D"version": "1.2.13", \u7248\u672C\uFF0C\u586B\u5199\u4E86\u7B2C\u4E00\u4E2A\u6CDB\u578B\u5C31\u5FC5\u987B\u8865\u5168\u540E\u7EED\u7684\u4E24\u4E2A\u6CDB\u578B
+const data = await NiceModal.show<string, MyModalProps, MyModalProps>(MyModal)
+
+// async-modal-render \u2705 \u81EA\u52A8\u63A8\u5BFC result \u7C7B\u578B\uFF0C\u65E0\u9700\u624B\u52A8\u6CDB\u578B
 const result = await render(
   MyModal,
   { visible: true },
@@ -242,7 +271,7 @@ const result = await render(
   }
 );
 console.log(result.data); // IDE \u667A\u80FD\u63D0\u793A\u53EF\u7528
-`,paraId:18,tocIndex:10}]},11579:function(d,e,a){a.r(e),a.d(e,{texts:function(){return n}});const n=[{value:"\u4E00\u4E2A\u5C06 React \u6A21\u6001\u6846\u64CD\u4F5C Promise \u5316\u7684\u8F7B\u91CF\u7EA7\u5DE5\u5177\u5E93\uFF0C\u8BA9\u4F60\u53EF\u4EE5\u4F7F\u7528 ",paraId:0,tocIndex:0},{value:"async/await",paraId:0,tocIndex:0},{value:" \u8BED\u6CD5\u4F18\u96C5\u5730\u5904\u7406\u6A21\u6001\u6846\u4EA4\u4E92\u3002",paraId:0,tocIndex:0},{value:"\u5728\u4F20\u7EDF\u7684 Modal \u4F7F\u7528\u65B9\u5F0F\u4E2D\uFF0C\u6211\u4EEC\u9700\u8981\u901A\u8FC7\u56DE\u8C03\u51FD\u6570\u6765\u5904\u7406\u7528\u6237\u7684\u64CD\u4F5C\uFF0C\u8FD9\u5BFC\u81F4\u4EE3\u7801\u903B\u8F91\u5206\u6563\uFF0C\u96BE\u4EE5\u7EF4\u62A4\uFF1A",paraId:1,tocIndex:2},{value:`// \u274C \u4F20\u7EDF\u65B9\u5F0F\uFF1A\u4EE3\u7801\u903B\u8F91\u5206\u6563\uFF0C\u96BE\u4EE5\u9605\u8BFB
+`,paraId:18,tocIndex:9}]},11579:function(d,e,a){a.r(e),a.d(e,{texts:function(){return n}});const n=[{value:"\u4E00\u4E2A\u5C06 React \u6A21\u6001\u6846\u64CD\u4F5C Promise \u5316\u7684\u8F7B\u91CF\u7EA7\u5DE5\u5177\u5E93\uFF0C\u8BA9\u4F60\u53EF\u4EE5\u4F7F\u7528 ",paraId:0,tocIndex:0},{value:"async/await",paraId:0,tocIndex:0},{value:" \u8BED\u6CD5\u4F18\u96C5\u5730\u5904\u7406\u6A21\u6001\u6846\u4EA4\u4E92\u3002",paraId:0,tocIndex:0},{value:"\u5728\u4F20\u7EDF\u7684 Modal \u4F7F\u7528\u65B9\u5F0F\u4E2D\uFF0C\u6211\u4EEC\u9700\u8981\u901A\u8FC7\u56DE\u8C03\u51FD\u6570\u6765\u5904\u7406\u7528\u6237\u7684\u64CD\u4F5C\uFF0C\u8FD9\u5BFC\u81F4\u4EE3\u7801\u903B\u8F91\u5206\u6563\uFF0C\u96BE\u4EE5\u7EF4\u62A4\uFF1A",paraId:1,tocIndex:2},{value:`// \u274C \u4F20\u7EDF\u65B9\u5F0F\uFF1A\u4EE3\u7801\u903B\u8F91\u5206\u6563\uFF0C\u96BE\u4EE5\u9605\u8BFB
 function TraditionalWay() {
   const [visible, setVisible] = useState(false);
 
