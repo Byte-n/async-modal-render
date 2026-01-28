@@ -24,29 +24,16 @@ import React from 'react';
 import { AsyncModalProps } from 'async-modal-render';
 
 interface ConfirmModalProps extends AsyncModalProps {
-  title: string;
-  content: string;
+  ...
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({
-  title,
-  content,
-  onOk,
-  onCancel
-}) => {
+const ConfirmModal = ({ ..., onOk, onCancel }: ConfirmModalProps) => {
   return (
     <div className="modal-overlay">
-      <div className="modal-container">
-        <div className="modal-header">
-          <h3>{title}</h3>
-        </div>
-        <div className="modal-body">
-          <p>{content}</p>
-        </div>
-        <div className="modal-footer">
-          <button onClick={() => onCancel?.()}>取消</button>
-          <button onClick={() => onOk?.('confirmed')}>确定</button>
-        </div>
+      ...
+      <div className="modal-footer">
+        <button onClick={() => onCancel?.()}>取消</button>
+        <button onClick={() => onOk?.('confirmed')}>确定</button>
       </div>
     </div>
   );
@@ -80,6 +67,25 @@ async function handleDelete() {
     alert('删除成功！');
   } catch (error) {
     console.log('用户取消了操作');
+  }
+}
+```
+### 使用已有的组件
+
+业务中已有的弹窗组件的props定义可能不一致。此时就需要使用 `withAsyncModalPropsMapper` 高阶组件处理 `props` 的映射。这样就可以在不改动原本组件的情况下使用。
+
+```tsx ｜ pure
+import { withAsyncModalPropsMapper } from 'async-modal-render';
+
+// EditorModal 是已有的组件，这里映射：onFinished -> onOk, onClose -> onCancel
+const EditorModalMapper = withAsyncModalPropsMapper(EditorModal, ['onFinished', 'onClose']);
+
+async function publishArticle() {
+  try {
+    const content = await asyncModalRender(EditorModalMapper, { title: '编辑文章' })
+    ...
+  } catch (error) {
+    console.log('取消');
   }
 }
 ```
