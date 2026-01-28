@@ -6,15 +6,15 @@
 
 > NiceModal 指的是：@ebay/nice-modal-react
 
-| 特性        | Normal (传统方式)     | NiceModal        | Async Modal Render       |
-|:----------|:------------------|:-----------------|:-------------------------|
-| **状态管理**  | 手动 (useState)     | 全局状态管理 (Hook 访问) | **自动 (无需 State)**        |
-| **组件挂载**  | JSX 显式挂载          | 需要 Wrapper 注册    | **函数调用自动挂载**             |
-| **逻辑流程**  | 分散 (onClick/onOk) | 基于 Promise       | **基于 Promise 的线性流**      |
-| **组件侵入性** | 低                 | 高 (需引入 useModal) | **零 (纯净组件)**             |
-| **类型支持**  | 手动定义              | 部分支持             | **全自动推导 (Props/Result)** |
-| **生命周期**  | 手动控制              | 默认保留 (需手动 remove) | **默认销毁 / 按需持久化**         |
-| **代码量**   | 繁琐                | 中等               | **最简**                   |
+| 特性        | Normal (传统方式)     | NiceModal             | Async Modal Render       |
+|:----------|:------------------|:----------------------|:-------------------------|
+| **状态管理**  | 手动 (useState)     | 全局状态管理 (Hook 访问)      | **自动 (无需 State)**        |
+| **组件挂载**  | JSX 显式挂载          | 需要 Wrapper 注册         | **函数调用自动挂载**             |
+| **逻辑流程**  | 分散 (onClick/onOk) | 基于 Promise            | 基于 Promise               |
+| **组件侵入性** | 低                 | 高 (需引入 useModal)      | **零 (纯净组件)**             |
+| **类型支持**  | 手动定义              | 部分支持                  | **全自动推导 (Props/Result)** |
+| **生命周期**  | 手动控制              | hide默认保留 (需手动 remove) | **默认销毁 / 按需持久化**         |
+| **代码量**   | 繁琐                | 中等                    | **最简**                   |
 
 ---
 
@@ -53,13 +53,13 @@ function AsyncExample() {
 }
 ```
 
-### 1.2 基于 Promise 的线性逻辑流程
+### 1.2 基于 Promise 的逻辑流程
 
 **Normal:** 业务逻辑被分散在 `onClick`（打开）、`onOk`（确认）、`onCancel`（取消）等多个回调函数中，导致代码割裂，阅读困难。
 **Async Modal Render:** 使用 `await` 在一个函数内完成“打开 -> 等待操作 -> 获取结果”的完整流程，逻辑连贯。
 
 ```tsx | pure
-// Async Modal Render: 线性逻辑
+// Async Modal Render: 逻辑
 const handleSubmit = async () => {
   try {
     const inputValue = await render(InputModal, { visible: true });
@@ -90,14 +90,15 @@ function MyModal () { ... }
 // NiceModal: ❌ 必须定义 Wrapper
 const MyModalWrapper = NiceModal.create(() => {
   const modal = useModal(); // 耦合
-  return <MyModal visible={modal.visible} onOk={modal.resolve}/>;
+  return <MyModal open={modal.visible} onConfirm={modal.resolve} .../>;
 });
 // 再通过 NiceModal.show 调用
 await NiceModal.show(MyModalWrapper, {})
 
-// Async Modal Render: ✅ 直接使用，或行内映射
+// Async Modal Render: ✅ props 仅键名称映射，无耦合代码。若符合 onOk，onCancel 键名称，则可以直接使用
+const MyModalWrapper2 = withAsyncModalPropsMapper(MyCustomModal, ['onConfirm', 'onClose']);
 await render(
-  withAsyncModalPropsMapper(MyCustomModal, ['onConfirm', 'onClose']), // 'onConfirm', 'onClose' 具有TS类型约束
+  MyModalWrapper2,
   { open: true }
 );
 ```
@@ -135,17 +136,38 @@ const TempComp = withAsyncModalPropsMapper(Xxxx, ['onConfirm', 'onClose'])
 ### 2.3 自动生命周期管理 (Auto Lifecycle)
 
 **NiceModal:** 默认行为是“保留”。关闭弹窗后，DOM 节点仍然存在，必须显式调用 `modal.remove()` 才能销毁。容易造成内存泄漏。
-**Async Modal Render:** 默认行为是“销毁”。`render` Promise 结束后，库会自动卸载组件并清理 DOM。天然杜绝内存泄漏。
-
-### 2.4 更安全的默认行为 (Safe Defaults)
-
-**NiceModal:** 默认不销毁导致状态残留，需要手动重置。
-**Async Modal Render:** 默认销毁保证了每次打开都是全新的状态 (Reset)。同时提供了显式的持久化选项 (`persistent` key)
+**Async Modal Render:** 默认行为是“销毁”。`render` Promise 结束后，库会自动卸载组件并清理 DOM。天然杜绝内存泄漏。默认销毁保证了每次打开都是全新的状态 (Reset)。同时提供了显式的持久化选项 (`persistent` key)
 ，控制权更精准。
+```tsx | pure
+// NiceModal
+const SelectUserModal = NiceModal.create((props) => {
+  const modal = useModal(); // ❌ 强耦合：组件离开了 NiceModal 环境就失效了
+  // 组件实现
+  return <Xxxx 
+    onClose={() => {
+      modal.resolve(); // 触发 Promise 状态流转
+      // modal.hide() // 仅修改 model.visible
+      modal.remove(); // 卸载弹窗
+    }}
+  >...</Xxxx>;
+});
+
+// ✅只能通过 `NiceModal.show` 调用 
+NiceModal.show(SelectUserModal, { ... })
+
+// async-modal-render
+// 显示的持久化选项
+render(MyModal, { ... }, { persistent: 'unique-modal', openField: 'open' })
+
+// 需要手动卸载，或 当前组件函数生命周期结束后，自动卸载。
+destroy({ persistent: 'unique-modal' })
+// useAsyncModalRenderContext的render对应AsyncModalRenderProvider
+// todo: 后续引入 destroyStrategy 配置项来控制卸载时机，以便实现全局、局部的持久化配置。
+```
 
 ---
 
-### 2.5 完善的 TypeScript 类型支持
+### 2.4 完善的 TypeScript 类型支持
 
 `async-modal-render` 提供了优秀的 TypeScript 类型推导能力。
 
@@ -153,7 +175,13 @@ const TempComp = withAsyncModalPropsMapper(Xxxx, ['onConfirm', 'onClose'])
 - **返回值类型推导**：`await render(...)` 的返回值类型会自动推导为组件回调函数的参数类型。
 
 ```tsx | pure
-// ✅ 自动推导 result 类型，无需手动泛型
+// NiceModal.show<Result, Component Props, Props>
+// 通过第一个泛型指定返回值类型，该类型与modal.resolve的返类型无约束，
+// 即modal.resolve('string') 改成 modal.resolve(90), 这里的引用也不会触发TS的类型校验错误
+// 当前"version": "1.2.13", 版本，填写了第一个泛型就必须补全后续的两个泛型
+const data = await NiceModal.show<string, MyModalProps, MyModalProps>(MyModal)
+
+// async-modal-render ✅ 自动推导 result 类型，无需手动泛型
 const result = await render(
   MyModal,
   { visible: true },
