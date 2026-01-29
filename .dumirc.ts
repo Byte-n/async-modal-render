@@ -66,7 +66,7 @@ export default defineConfig({
       },
       {
         title: '自动化测试',
-        details: '提供完善的 Vitest 浏览器模式测试用例，覆盖 Hook、Context 和 HOC 等核心功能，确保库的稳定性',
+        details: '包含 30+ 个 Vitest 浏览器模式测试用例，全方位覆盖 Hook、Context、HOC、持久化及静默模式等核心场景，确保库的稳定性',
       },
       {
         title: '灵活组件化',

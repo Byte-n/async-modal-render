@@ -14,6 +14,7 @@ export default () => {
       const res = await asyncModalRender(InputModal, {
         title: '请输入姓名',
         placeholder: '例如：张三',
+        open: true,
       });
       setResult(`输入弹窗 - 结果: ${res}`);
     } catch (error) {
@@ -25,6 +26,7 @@ export default () => {
     try {
       const res = await asyncModalRender(AdaptedCustomModal, {
         header: '自定义适配弹窗',
+        visible: true
       });
       setResult(`适配弹窗 - 结果: ${res}`);
     } catch (error) {
