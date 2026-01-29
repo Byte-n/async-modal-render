@@ -79,6 +79,32 @@ async function go() {
 }
 ```
 
+## `withAsyncModalPropsMapper` 与 `persistent` 注意事项
+
+当使用 `persistent` 选项进行持久化渲染时，系统会严格检查同一个 `persistent` key 是否始终对应同一个**组件引用**。如果引用发生变化（即使是功能相同的不同组件类），系统会抛出 `PersistentComponentConflictError` 错误以防止 React 状态丢失。
+
+因此，在使用 `withAsyncModalPropsMapper` 时请注意：
+
+1.  **内部缓存机制**：`withAsyncModalPropsMapper` 内部实现了缓存。对于**相同的原组件**和**相同的映射配置**，它总是返回**同一个组件引用**。这意味着你可以在代码中多次调用它而不用担心引用变化导致的持久化冲突。
+2.  **禁止混用**：切勿对同一个 `persistent` key 混用“原组件”和“包装后的组件”，或者“不同映射配置的包装组件”。
+
+```typescript
+// ✅ 正确：引用一致（推荐在组件外定义，或者直接在 render 中调用，利用内部缓存）
+const MappedModal = withAsyncModalPropsMapper(MyModal, ['onConfirm', 'onClose']);
+render(MappedModal, {}, { persistent: 'key-1', openField: 'visible' });
+render(MappedModal, {}, { persistent: 'key-1', openField: 'visible' });
+
+// ✅ 正确：得益于 withAsyncModalPropsMapper 的内部缓存，这也是安全的
+render(withAsyncModalPropsMapper(MyModal, ['onConfirm', 'onClose']), {}, { persistent: 'key-2', openField: 'visible' });
+render(withAsyncModalPropsMapper(MyModal, ['onConfirm', 'onClose']), {}, { persistent: 'key-2', openField: 'visible' });
+
+// ❌ 错误：同一个 key 对应的组件引用发生了变化
+// 第一次：使用原组件
+render(MyModal, {}, { persistent: 'key-3', openField: 'visible' });
+// 第二次：使用包装后的组件 -> 💥 抛出 PersistentComponentConflictError
+render(withAsyncModalPropsMapper(MyModal, ...), {}, { persistent: 'key-3', openField: 'visible' });
+```
+
 ## API
 
 详细 API 文档请参考 [API](/api)。

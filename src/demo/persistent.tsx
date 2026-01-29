@@ -10,10 +10,10 @@ const PersistentModal: React.FC<PersistentModalProps> = ({ open, onOk, onCancel 
   const [count, setCount] = useState(0);
 
   return (
-    <Modal 
-      title="持久化弹窗" 
-      open={open} 
-      onOk={() => onOk?.()} 
+    <Modal
+      title="持久化弹窗"
+      open={open}
+      onOk={() => onOk?.()}
       onCancel={() => onCancel?.()}
     >
       <p>这个弹窗的状态是持久化的。</p>
@@ -31,12 +31,14 @@ export default () => {
   const { render, holder, destroy } = useAsyncModalRender();
 
   const handleOpen = async () => {
-    await render(PersistentModal, 
-      {}, 
-      { 
+    // 或者直接使用 renderPersistent 拥有更好的类型提示
+    await render(
+      PersistentModal,
+      { open: true },
+      {
         persistent: 'my-unique-modal', // 指定一个固定的 key 实现持久化
-        openField: 'open'             // 指定控制显示的 prop 字段名
-      }
+        openField: 'open', // 指定控制显示的 prop 字段名
+      },
     );
   };
 

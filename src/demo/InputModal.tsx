@@ -3,12 +3,16 @@ import { AsyncModalProps } from 'async-modal-render';
 import Modal from './Modal';
 
 export interface InputModalProps extends AsyncModalProps {
+  open?: boolean;
   title?: string;
   placeholder?: string;
   defaultValue?: string;
+  onOk?: (v: string) => void;
+  onCancel?: (v: string) => void;
 }
 
 const InputModal: React.FC<InputModalProps> = ({
+  open,
   title = '请输入',
   placeholder = '请输入内容',
   defaultValue = '',
@@ -19,6 +23,7 @@ const InputModal: React.FC<InputModalProps> = ({
 
   return (
     <Modal
+      open={open}
       title={title}
       onOk={() => onOk?.(value)}
       onCancel={onCancel}

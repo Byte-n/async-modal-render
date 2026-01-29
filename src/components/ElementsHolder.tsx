@@ -1,5 +1,6 @@
 import React, {
   cloneElement,
+  ComponentType,
   forwardRef,
   memo,
   ReactElement,
@@ -15,6 +16,7 @@ type Persistent = string | symbol | number;
 export interface ElementsHolderRef {
   patchElement: PatchElement;
   removeElement: RemoveElement;
+  getElement: GetElement;
 }
 
 interface Ele {
@@ -22,32 +24,40 @@ interface Ele {
   persistent: Persistent | undefined;
   element: ReactElement;
   openField?: Persistent;
+  component: ComponentType<any>;
 }
 
 interface PatchElement {
-  (element: ReactElement, persistent?: Persistent, openField?: Persistent): VoidFunction;
+  (element: ReactElement, component: ComponentType<any>, persistent?: Persistent, openField?: Persistent): VoidFunction;
 }
 
 interface RemoveElement {
   (options: AsyncModalDestroyOptions): void;
 }
 
+interface GetElement {
+  (persistent: Persistent): Ele | undefined;
+}
+
 export default memo(
   forwardRef<ElementsHolderRef>((_props, ref) => {
-    const [elements, patchElement, removeElement] = usePatchElement()
-    useImperativeHandle(ref, () => ({ patchElement, removeElement }), [patchElement, removeElement])
+    const [elements, patchElement, removeElement, getElement] = usePatchElement()
+    useImperativeHandle(ref, () => ({ patchElement, removeElement, getElement }), [patchElement, removeElement, getElement])
     return <>{elements.map((item) => item.element)}</>
   }),
 )
 
-const usePatchElement = (): [Ele[], PatchElement, RemoveElement] => {
+const usePatchElement = (): [Ele[], PatchElement, RemoveElement, GetElement] => {
   const [elements, setElements] = useState<Ele[]>([]);
   const incrKeyRef = useRef(1);
-  const patchElement = useCallback<PatchElement>((ele, persistent, openField) => {
+  const elementsRef = useRef<Ele[]>([]);
+  elementsRef.current = elements;
+
+  const patchElement = useCallback<PatchElement>((ele, component, persistent, openField) => {
     // 生成唯一的 patch ID，用于清理
     const id = incrKeyRef.current++;
     const key = `async-modal-${Math.random().toString(36).slice(2)}-${id}`;
-    
+
     setElements((originElements) => {
       let element = ele;
       if (persistent !== undefined) {
@@ -61,13 +71,20 @@ const usePatchElement = (): [Ele[], PatchElement, RemoveElement] => {
             persistent,
             element,
             openField,
+            component,
           };
           return nextElements;
         }
       }
       // 新增元素，使用唯一 key
       element = cloneElement(element, { key });
-      return originElements.concat({ id, persistent, element, openField })
+      return originElements.concat({
+        id,
+        persistent,
+        element,
+        openField,
+        component,
+      })
     });
 
     return () => {
@@ -107,5 +124,9 @@ const usePatchElement = (): [Ele[], PatchElement, RemoveElement] => {
     );
   }, []);
 
-  return [elements, patchElement, removeElement];
+  const getElement = useCallback<GetElement>((persistent) => {
+    return elementsRef.current.find((item) => item.persistent === persistent);
+  }, []);
+
+  return [elements, patchElement, removeElement, getElement];
 };
