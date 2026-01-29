@@ -1,5 +1,22 @@
 # 更新日志
 
+## 0.1.0
+
+`2026-01-29`
+
+### 新增特性
+
+- **持久化弹窗 (Persistent Modals)**: 新增 `renderPersistent` 和 `renderFactoryPersistent` API。支持弹窗在关闭时仅隐藏而不销毁，从而保留内部状态（如表单输入、Tab 选中态等）。
+- **静默模式 (Quiet Mode)**: 新增 `renderQuiet` 和 `renderFactoryQuiet` API。当用户取消/关闭弹窗时，不再抛出 `AsyncModalRenderCancelError`，而是 resolve `undefined`，简化了简单的确认/取消流程处理。
+- **Context 销毁策略**: `useAsyncModalRenderContext` 的渲染选项新增 `destroyStrategy` 属性。
+  - `hook`: 跟随当前组件卸载而自动销毁弹窗（防止内存泄漏）。
+  - `context` (默认): 弹窗生命周期与 `AsyncModalRenderProvider` 绑定，不随调用组件卸载而销毁。
+
+### 优化
+
+- **持久化冲突检测**: 在 `useAsyncModalRender` 中增加了安全检查，当尝试使用相同的 `persistent` Key 渲染不同组件时，会抛出 `PersistentComponentConflictError`，防止因组件引用变化导致的 React 状态意外重置。
+- **Props 映射器缓存**: 优化 `withAsyncModalPropsMapper` 高阶组件，实现了基于组件引用和映射 Key 的缓存机制，避免生成重复的包装组件，减少不必要的 React 渲染。
+
 ## 0.0.7
 
 `2026-01-28`

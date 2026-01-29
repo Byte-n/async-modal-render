@@ -6,6 +6,7 @@ type ReturnType<D extends AsyncModalProps> = D['onOk'] extends (v: infer R) => v
 
 interface AsyncModalOptions {
   onClose: VoidFunction
+  quiet?: boolean
 }
 
 /**
@@ -18,21 +19,28 @@ export function asyncModalRenderImp<D extends AsyncModalProps>(
   Comp: React.ComponentType<D>,
   props: ComputeAsyncModalProps<D>,
   options: AsyncModalOptions,
-): [React.ReactElement, Promise<ReturnType<D>>] {
+): [React.ReactElement, Promise<ReturnType<D>>, (error: Error) => void] {
   let dom: React.ReactElement | null = null;
+  let localReject: (error: Error) => void;
   const promise = new Promise<ReturnType<D>>((resolve, reject) => {
-    const onOk = (v: ReturnType<D>) => {
+    localReject = reject;
+    const onOk = (v: ReturnType<D>, ...args: unknown[]) => {
       options.onClose();
       resolve(v);
-      props?.onOk?.(v);
+      props?.onOk?.(v, ...args);
     };
     const onCancel = (err: any) => {
-      const realError = err === undefined ? new AsyncModalRenderCancelError() : err;
       options.onClose();
-      reject(realError);
-      props?.onCancel?.(realError);
+      if (!options.quiet) {
+        const realError = err === undefined ? new AsyncModalRenderCancelError() : err;
+        reject(realError);
+        props?.onCancel?.(realError);
+      } else {
+        resolve(undefined as ReturnType<D>);
+        props?.onCancel?.();
+      }
     };
     dom = <Comp {...(props as ComponentProps<typeof Comp>)} onOk={onOk} onCancel={onCancel} />;
   });
-  return [dom!, promise];
+  return [dom!, promise, localReject!];
 }
