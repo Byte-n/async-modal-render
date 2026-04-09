@@ -179,6 +179,7 @@ async function handleSubmit() {
 现在你已经掌握了 async-modal-render 的基本用法！接下来可以：
 
 - 查看 [完整文档](/components) 了解更多 API 细节
+- 查看 [Agent Skills 指南](/guide/agent-skills) 了解项目内置 Skill 的使用方式
 - 结合 Ant Design、Material-UI 等 UI 库使用
 - 根据项目需求定制你自己的 Modal 组件
 

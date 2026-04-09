@@ -26,7 +26,8 @@ export default defineConfig({
       'Made with<span style="color: rgb(255, 255, 255);">❤</span>by <span>Byte-n | Copyright © 2025-present</span>',
     github: 'https://github.com/Byte-n/async-modal-render',
     // sidebarGroupModePath: ['/config', '/guide'],
-    description: '一个将 React 模态框操作 Promise 化的轻量级工具库，支持 async/await 语法，让异步交互代码更简洁优雅',
+    description:
+      '一个将 React 模态框操作 Promise 化的轻量级工具库，支持 async/await 语法，并提供 Agent Skills，让异步交互代码更简洁优雅',
     actions: [
       {
         type: 'primary',
@@ -56,6 +57,10 @@ export default defineConfig({
         details: '使用 TypeScript 编写，提供完整的类型定义和智能提示',
       },
       {
+        title: 'Agent Skills 支持',
+        details: '提供 Agent Skill，便于沉淀 async-modal-render 的最佳实践并接入 AI 编码工作流',
+      },
+      {
         title: '多种用法',
         details: '支持函数式调用、Hook 和 Context 三种使用方式，适应不同场景需求',
       },
@@ -69,7 +74,8 @@ export default defineConfig({
       },
       {
         title: '自动化测试',
-        details: '包含 30+ 个 Vitest 浏览器模式测试用例，全方位覆盖 Hook、Context、HOC、持久化及静默模式等核心场景，确保库的稳定性',
+        details:
+          '包含 30+ 个 Vitest 浏览器模式测试用例，全方位覆盖 Hook、Context、HOC、持久化及静默模式等核心场景，确保库的稳定性',
       },
       {
         title: '灵活组件化',
