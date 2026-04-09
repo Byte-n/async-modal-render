@@ -1,7 +1,7 @@
-import React from 'react'
-import { staticRender } from './utils/staticRender'
-import { asyncModalRenderImp } from './utils/asyncModalRenderImp'
-import type { AsyncModalProps, ComputeAsyncModalProps } from './types'
+import React from 'react';
+import type { AsyncModalProps, ComputeAsyncModalProps, QuietType } from './types';
+import { asyncModalRenderImp } from './utils/asyncModalRenderImp';
+import { staticRender } from './utils/staticRender';
 
 /**
  * 直接将组件渲染到 container 元素下
@@ -14,15 +14,15 @@ import type { AsyncModalProps, ComputeAsyncModalProps } from './types'
  * @param options.quiet 是否开启静默模式。开启后，取消操作不会抛出错误。
  * @returns 返回一个 Promise，resolve 值为 onOk 回调的参数
  */
-export async function asyncModalRender<D extends AsyncModalProps, Quiet extends boolean>(
+export async function asyncModalRender<D extends AsyncModalProps, Quiet extends QuietType = undefined>(
   Comp: React.ComponentType<D>,
   props?: ComputeAsyncModalProps<D>,
   container?: Element,
-  options?: { quiet: Quiet }
+  options?: { quiet: Quiet },
 ) {
-  const [dom, promise] = asyncModalRenderImp<D>(Comp, props ?? ({} as ComputeAsyncModalProps<D>), {
+  const [dom, promise] = asyncModalRenderImp<D, Quiet>(Comp, props ?? ({} as ComputeAsyncModalProps<D>), {
     onClose: () => closeFunc(),
-    quiet: options?.quiet
+    quiet: options?.quiet,
   });
   let uninstallEffect = () => {};
   let realContainer = container;

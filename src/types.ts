@@ -1,4 +1,5 @@
-import React from 'react'
+import type { ComponentType, ReactElement } from 'react';
+import type { ReturnType } from './utils/asyncModalRenderImp';
 
 /**
  * 弹窗组件的基础属性接口
@@ -19,18 +20,19 @@ export interface AsyncModalProps {
   onCancel?: (error?: any) => void;
 }
 
+export type QuietType = boolean | undefined;
+
 /**
  * 计算组件的 Props 类型
  * 将 onOk 和 onCancel 设为可选，保留其他属性
  */
-export type ComputeAsyncModalProps<D extends AsyncModalProps> =
-  & Pick<D, Exclude<keyof D, 'onOk' |'onCancel'>>
-  & Partial<Pick<D, 'onOk' | 'onCancel'>>
+export type ComputeAsyncModalProps<D extends AsyncModalProps> = Pick<D, Exclude<keyof D, 'onOk' | 'onCancel'>> &
+  Partial<Pick<D, 'onOk' | 'onCancel'>>;
 
 /**
  * 渲染选项配置
  */
-export type AsyncModalRenderOptions<D, Quiet extends boolean> = {
+export type AsyncModalRenderOptions<D, Quiet extends QuietType = undefined> = {
   /**
    * 状态持久化的 key (需要同时传入openFiled才有效， 建议调用 renderPersistent 获取更好的 ts类型 校验)
    * 若传入此 key，弹窗关闭后不会销毁，而是隐藏，下次使用相同 key 打开时会恢复状态
@@ -49,7 +51,7 @@ export type AsyncModalRenderOptions<D, Quiet extends boolean> = {
    * 默认为 false
    */
   quiet?: Quiet;
-}
+};
 
 type ExtractBooleanKeys<T> = {
   [K in keyof T]: Required<T>[K] extends boolean ? K : never;
@@ -78,11 +80,11 @@ export interface AsyncModalDestroyOptions {
  * 用于直接渲染弹窗并返回 Promise
  */
 export interface AsyncModalRender {
-  <D extends AsyncModalProps, const Quiet extends boolean>(
-    Comp: React.ComponentType<D>,
+  <D extends AsyncModalProps, const Quiet extends QuietType = undefined>(
+    Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: AsyncModalRenderOptions<D, Quiet>,
-  ): Promise<D['onOk'] extends (v: infer R) => void ? ComputeQuiet<Quiet, R> : never> & { destroyModal: VoidFunction };
+  ): ComputeResult<D, Quiet> & { destroyModal: VoidFunction };
 }
 
 /**
@@ -90,12 +92,12 @@ export interface AsyncModalRender {
  * 强制要求传入 persistent 和 openField
  */
 export interface AsyncModalRenderPersistent {
-  <D extends AsyncModalProps, const Quiet extends boolean>(
-    Comp: React.ComponentType<D>,
+  <D extends AsyncModalProps, const Quiet extends QuietType = undefined>(
+    Comp: ComponentType<D>,
     props: ComputeAsyncModalProps<D>,
-    options: Omit<AsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'>
-      & Required<Pick<AsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'>>,
-  ): Promise<D['onOk'] extends (v: infer R) => void ? ComputeQuiet<Quiet, R> : never> & { destroyModal: VoidFunction };
+    options: Omit<AsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'> &
+      Required<Pick<AsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'>>,
+  ): ComputeResult<D, Quiet> & { destroyModal: VoidFunction };
 }
 
 /**
@@ -103,12 +105,12 @@ export interface AsyncModalRenderPersistent {
  * 返回一个预配置了持久化参数的渲染函数
  */
 export interface AsyncModalRenderPersistentFactory {
-  <D extends AsyncModalProps, const Quiet extends boolean>(
-    Comp: React.ComponentType<D>,
+  <D extends AsyncModalProps, const Quiet extends QuietType = undefined>(
+    Comp: ComponentType<D>,
     props: ComputeAsyncModalProps<D>,
     options: Omit<AsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'> &
       Required<Pick<AsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'>>,
-  ): RenderFactory<D, Quiet>
+  ): RenderFactory<D, Quiet>;
 }
 
 /**
@@ -117,10 +119,10 @@ export interface AsyncModalRenderPersistentFactory {
  */
 export interface AsyncModalRenderQuiet {
   <D extends AsyncModalProps>(
-    Comp: React.ComponentType<D>,
+    Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: Omit<AsyncModalRenderOptions<D, true>, 'quiet'>,
-  ): Promise<D['onOk'] extends (v: infer R) => void ? ComputeQuiet<true, R> : never> & { destroyModal: VoidFunction };
+  ): ComputeResult<D, true> & { destroyModal: VoidFunction };
 }
 
 /**
@@ -128,12 +130,11 @@ export interface AsyncModalRenderQuiet {
  */
 export interface AsyncModalRenderQuietFactory {
   <D extends AsyncModalProps>(
-    Comp: React.ComponentType<D>,
+    Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: Omit<AsyncModalRenderOptions<D, true>, 'quiet'>,
-  ): RenderFactory<D, true>
+  ): RenderFactory<D, true>;
 }
-
 
 // const fun: AsyncModalRender = null as any as AsyncModalRender;
 // fun(null as any as ComponentType<AsyncModalProps & {OPEN?:boolean}>, {onCancel: (_)=> {}}, { persistent:'s', quiet:true, openField: 'OPEN'  })
@@ -142,22 +143,24 @@ export interface AsyncModalRenderQuietFactory {
  * 渲染工厂生成的函数类型
  * 执行该函数会触发弹窗渲染
  */
-export type RenderFactory <D extends AsyncModalProps, Quiet extends boolean> =
-  (() => Promise<D['onOk'] extends (v: infer R) => void ? ComputeQuiet<Quiet, R> : never> & {
-    destroyModal: VoidFunction;
-  }) & {
-    /**
-     * 销毁该工厂产生的所有弹窗实例（主要用于清理）
-     */
-    destroyModal: VoidFunction;
-  };
+export type RenderFactory<D extends AsyncModalProps, Quiet extends QuietType = undefined> = (() => ComputeResult<
+  D,
+  Quiet
+> & {
+  destroyModal: VoidFunction;
+}) & {
+  /**
+   * 销毁该工厂产生的所有弹窗实例（主要用于清理）
+   */
+  destroyModal: VoidFunction;
+};
 
 /**
  * 通用渲染工厂函数接口
  */
 export interface AsyncModalRenderFactory {
-  <D extends AsyncModalProps, Quiet extends boolean>(
-    Comp: React.ComponentType<D>,
+  <D extends AsyncModalProps, Quiet extends QuietType = undefined>(
+    Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: AsyncModalRenderOptions<D, Quiet>,
   ): RenderFactory<D, Quiet>;
@@ -177,7 +180,7 @@ export interface UseAsyncModalRenderReturn {
   /** 标准渲染函数 */
   render: AsyncModalRender;
   /** 挂载节点，需要放置在组件树中 */
-  holder: React.ReactElement;
+  holder: ReactElement;
   /** 渲染工厂函数 */
   renderFactory: AsyncModalRenderFactory;
   /** 销毁函数 */
@@ -196,7 +199,10 @@ export interface UseAsyncModalRenderReturn {
  * Context 模式下的渲染选项
  * 增加了 destroyStrategy 选项
  */
-export type ContextAsyncModalRenderOptions<D, Quiet extends boolean> = AsyncModalRenderOptions<D, Quiet> & {
+export type ContextAsyncModalRenderOptions<D, Quiet extends QuietType = undefined> = AsyncModalRenderOptions<
+  D,
+  Quiet
+> & {
   /**
    * 销毁策略
    * hook: 跟随调用 hook 的组件销毁而销毁（默认）
@@ -205,41 +211,42 @@ export type ContextAsyncModalRenderOptions<D, Quiet extends boolean> = AsyncModa
   destroyStrategy?: 'hook' | 'context';
 };
 
+type ComputeResult<D extends AsyncModalProps, Quiet extends QuietType = undefined> = Promise<ReturnType<D, Quiet>>;
+
 /**
  * Context 模式下的渲染函数接口
  */
 export interface ContextAsyncModalRender {
-  <D extends AsyncModalProps, Quiet extends boolean>(
-    Comp: React.ComponentType<D>,
+  <D extends AsyncModalProps, Quiet extends QuietType = undefined>(
+    Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: ContextAsyncModalRenderOptions<D, Quiet>,
-  ): Promise<D['onOk'] extends (v: infer R) => void ? ComputeQuiet<Quiet, R> : never>;
+  ): ComputeResult<D, Quiet>;
 }
 
 /**
  * Context 模式下的渲染工厂函数接口
  */
 export interface ContextAsyncModalRenderFactory {
-  <D extends AsyncModalProps, Quiet extends boolean>(
-    Comp: React.ComponentType<D>,
+  <D extends AsyncModalProps, Quiet extends QuietType = undefined>(
+    Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: ContextAsyncModalRenderOptions<D, Quiet>,
-  ): () => Promise<D['onOk'] extends (v: infer R) => void ? ComputeQuiet<Quiet, R> : never>;
+  ): () => ComputeResult<D, Quiet>;
 }
 
-
 export interface ContextAsyncModalRenderPersistent {
-  <D extends AsyncModalProps, const Quiet extends boolean>(
-    Comp: React.ComponentType<D>,
+  <D extends AsyncModalProps, const Quiet extends QuietType = undefined>(
+    Comp: ComponentType<D>,
     props: ComputeAsyncModalProps<D>,
     options: Omit<ContextAsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'> &
       Required<Pick<ContextAsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'>>,
-  ): Promise<D['onOk'] extends (v: infer R) => void ? ComputeQuiet<Quiet, R> : never> & { destroyModal: VoidFunction };
+  ): ComputeResult<D, Quiet> & { destroyModal: VoidFunction };
 }
 
 export interface ContextAsyncModalRenderPersistentFactory {
-  <D extends AsyncModalProps, const Quiet extends boolean>(
-    Comp: React.ComponentType<D>,
+  <D extends AsyncModalProps, const Quiet extends QuietType = undefined>(
+    Comp: ComponentType<D>,
     props: ComputeAsyncModalProps<D>,
     options: Omit<ContextAsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'> &
       Required<Pick<ContextAsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'>>,
@@ -248,25 +255,19 @@ export interface ContextAsyncModalRenderPersistentFactory {
 
 export interface ContextAsyncModalRenderQuiet {
   <D extends AsyncModalProps>(
-    Comp: React.ComponentType<D>,
+    Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: Omit<ContextAsyncModalRenderOptions<D, true>, 'quiet'>,
-  ): Promise<D['onOk'] extends (v: infer R) => void ? ComputeQuiet<true, R> : never> & { destroyModal: VoidFunction };
+  ): ComputeResult<D, true> & { destroyModal: VoidFunction };
 }
 
 export interface ContextAsyncModalRenderQuietFactory {
   <D extends AsyncModalProps>(
-    Comp: React.ComponentType<D>,
+    Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: Omit<ContextAsyncModalRenderOptions<D, true>, 'quiet'>,
   ): RenderFactory<D, true>;
 }
-
-/**
- * 计算 Quiet 模式下的返回值类型
- * 若 Quiet 为 true，则返回类型包含 undefined (取消时)
- */
-type ComputeQuiet <Quiet extends boolean, R> = Quiet extends true ? (R | undefined) : R
 
 /**
  * Context 提供的接口

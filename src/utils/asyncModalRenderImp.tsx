@@ -1,12 +1,20 @@
 import React, { ComponentProps } from 'react';
-import { AsyncModalProps, ComputeAsyncModalProps } from '../types';
+import { AsyncModalProps, ComputeAsyncModalProps, QuietType } from '../types';
 import { AsyncModalRenderCancelError } from './AsyncModalRenderCancelError';
 
-type ReturnType<D extends AsyncModalProps> = D['onOk'] extends (v: infer R) => void ? R : never;
+export type ReturnType<D extends AsyncModalProps, Quiet extends QuietType = undefined> = Exclude<D['onOk'], undefined> extends (v: infer R) => void
+  ? ComputeQuiet<Quiet, R>
+  : never;
 
-interface AsyncModalOptions {
-  onClose: VoidFunction
-  quiet?: boolean
+/**
+ * 计算 Quiet 模式下的返回值类型
+ * 若 Quiet 为 true，则返回类型包含 undefined (取消时)
+ */
+export type ComputeQuiet<Quiet extends QuietType = undefined, R = never> = Quiet extends true ? R | undefined : R;
+
+interface AsyncModalOptions<Quiet extends QuietType = undefined> {
+  onClose: VoidFunction;
+  quiet?: Quiet;
 }
 
 /**
@@ -15,16 +23,16 @@ interface AsyncModalOptions {
  * @param props
  * @param options
  */
-export function asyncModalRenderImp<D extends AsyncModalProps>(
+export function asyncModalRenderImp<D extends AsyncModalProps, Quiet extends QuietType = undefined>(
   Comp: React.ComponentType<D>,
   props: ComputeAsyncModalProps<D>,
-  options: AsyncModalOptions,
-): [React.ReactElement, Promise<ReturnType<D>>, (error: Error) => void] {
+  options: AsyncModalOptions<Quiet>,
+): [React.ReactElement, Promise<ReturnType<D, Quiet>>, (error: Error) => void] {
   let dom: React.ReactElement | null = null;
   let localReject: (error: Error) => void;
-  const promise = new Promise<ReturnType<D>>((resolve, reject) => {
+  const promise = new Promise<ReturnType<D, Quiet>>((resolve, reject) => {
     localReject = reject;
-    const onOk = (v: ReturnType<D>, ...args: unknown[]) => {
+    const onOk = (v: ReturnType<D, Quiet>, ...args: unknown[]) => {
       options.onClose();
       resolve(v);
       props?.onOk?.(v, ...args);
@@ -36,7 +44,7 @@ export function asyncModalRenderImp<D extends AsyncModalProps>(
         reject(realError);
         props?.onCancel?.(realError);
       } else {
-        resolve(undefined as ReturnType<D>);
+        resolve(undefined as ReturnType<D, Quiet>);
         props?.onCancel?.();
       }
     };
