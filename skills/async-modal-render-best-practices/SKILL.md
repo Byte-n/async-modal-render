@@ -175,3 +175,5 @@ const Adapted = withAsyncModalPropsMapper(MyModal, ['onSubmit', 'onClose']);
 - 非 quiet 模式下用户取消会抛出 `AsyncModalRenderCancelError`，若业务上需要在用户取消时执行特定操作（如回滚状态、提示用户等），则需要 try {} catch 处理该异常
 - Hook 模式的 `holder` 必须渲染到 JSX 中，否则弹窗不会显示
 - Context 模式支持 `destroyStrategy` 选项：`'hook'` 弹窗随调用组件卸载而销毁，`'context'` 不随组件卸载需手动管理；不传则不自动销毁
+- **普通 `render`/`renderQuiet` 方法**：库自动管理弹窗的显示/隐藏状态，**不应**手动传递控制显示/隐藏的字段（如 `open: true`），由库内部处理显示逻辑
+- **持久化 `renderPersistent` 方法**：必须通过 `openField` 参数指定组件中控制显示/隐藏的字段名称，并在 props 中传递相应的持久化状态
