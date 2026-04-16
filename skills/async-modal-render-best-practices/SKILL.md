@@ -215,5 +215,5 @@ const Adapted = withAsyncModalPropsMapper(MyModal, ['onSubmit', 'onClose']);
 
 - **弹窗适配**：`withAsyncModalPropsMapper` 在模块顶层调用，不要在组件内部调用（persistent 模式要求引用稳定）
 - **持久化**：同一 `persistent` key 必须对应同一组件引用，否则抛出 `PersistentComponentConflictError`
-- **普通 `render`/`renderQuiet` 方法**：库自动管理弹窗的显示/隐藏状态，**不应**手动传递控制显示/隐藏的字段（如 `open: true`），由库内部处理显示逻辑
+- **`render`/`renderQuiet` 方法**：**不会**自动管理弹窗的可见性，调用时**必须**在 props 中手动传递可见性字段（如 `open: true`），否则弹窗不会显示
 - **持久化 `renderPersistent` 方法**：必须通过 `openField` 参数指定组件中控制显示/隐藏的字段名称，并在 props 中传递相应的持久化状态
