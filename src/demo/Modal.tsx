@@ -1,15 +1,7 @@
 import React from 'react';
-import { AsyncModalProps } from 'async-modal-render';
-import {
-  maskStyle,
-  modalBaseStyle,
-  closeStyle,
-  headerStyle,
-  bodyStyle,
-  footerStyle,
-  buttonStyle,
-  primaryButtonStyle,
-} from './modalStyles';
+import { Pressable, Text, View } from 'react-native';
+import type { AsyncModalProps } from '../types';
+import { modalStyles } from './modalStyles';
 
 export interface ModalProps extends AsyncModalProps {
   open?: boolean;
@@ -17,134 +9,61 @@ export interface ModalProps extends AsyncModalProps {
   children?: React.ReactNode;
   okText?: string;
   cancelText?: string;
-  width?: number | string;
   footer?: React.ReactNode | null;
   closable?: boolean;
   maskClosable?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({
+export function Modal({
   open = true,
   title = '提示',
   children,
   okText = '确定',
   cancelText = '取消',
-  width = 520,
   footer,
   closable = true,
   maskClosable = true,
   onOk,
   onCancel,
-}) => {
-  if (!open) {
-    return null;
-  }
-  const handleMaskClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (maskClosable && e.target === e.currentTarget) {
-      onCancel?.();
-    }
-  };
-
-  const handleOk = () => {
-    onOk?.();
-  };
-
-  const handleCancel = () => {
-    onCancel?.();
-  };
-
-  // 动态合并样式
-  const modalStyle: React.CSSProperties = {
-    ...modalBaseStyle,
-    width: typeof width === 'number' ? `${width}px` : width,
-  };
+}: ModalProps) {
+  if (!open) return null;
 
   return (
-    <div style={maskStyle} onClick={handleMaskClick}>
-      <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+    <Pressable style={modalStyles.mask} onPress={() => maskClosable && onCancel?.()}>
+      <Pressable style={modalStyles.modal} onPress={() => undefined}>
         {closable && (
-          <button
-            style={closeStyle}
-            onClick={handleCancel}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'rgba(0, 0, 0, 0.88)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'rgba(0, 0, 0, 0.45)';
-            }}
-          >
-            <span style={{ fontSize: '14px' }}>✕</span>
-          </button>
+          <Pressable style={modalStyles.close} onPress={() => onCancel?.()}>
+            <Text style={modalStyles.buttonText}>x</Text>
+          </Pressable>
         )}
-        {title && <div style={headerStyle}>{title}</div>}
-        <div style={bodyStyle}>{children}</div>
-        <ModalFooter
-          footer={footer}
-          okText={okText}
-          cancelText={cancelText}
-          onOk={handleOk}
-          onCancel={handleCancel}
-        />
-      </div>
-    </div>
+        {title ? <Text style={modalStyles.header}>{title}</Text> : null}
+        <View style={modalStyles.body}>{children}</View>
+        <ModalFooter footer={footer} okText={okText} cancelText={cancelText} onOk={onOk} onCancel={onCancel} />
+      </Pressable>
+    </Pressable>
   );
-};
-
-export default Modal;
+}
 
 interface ModalFooterProps {
   footer?: React.ReactNode | null;
   okText?: string;
   cancelText?: string;
-  onOk: () => void;
-  onCancel: () => void;
+  onOk?: (...args: any[]) => void;
+  onCancel?: (error?: any) => void;
 }
 
-function ModalFooter({
-  footer,
-  okText,
-  cancelText,
-  onOk,
-  onCancel,
-}: ModalFooterProps) {
-  if (footer === null) {
-    return null;
-  }
-
-  if (footer !== undefined) {
-    return <div style={footerStyle}>{footer}</div>;
-  }
+function ModalFooter({ footer, okText, cancelText, onOk, onCancel }: ModalFooterProps) {
+  if (footer === null) return null;
+  if (footer !== undefined) return <View style={modalStyles.footer}>{footer}</View>;
 
   return (
-    <div style={footerStyle}>
-      <button
-        style={buttonStyle}
-        onClick={onCancel}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#4096ff';
-          e.currentTarget.style.borderColor = '#4096ff';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = 'rgba(0, 0, 0, 0.88)';
-          e.currentTarget.style.borderColor = '#d9d9d9';
-        }}
-      >
-        {cancelText}
-      </button>
-      <button
-        style={{ ...primaryButtonStyle, marginLeft: '8px' }}
-        onClick={onOk}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#4096ff';
-          e.currentTarget.style.borderColor = '#4096ff';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#1677ff';
-          e.currentTarget.style.borderColor = '#1677ff';
-        }}
-      >
-        {okText}
-      </button>
-    </div>
+    <View style={modalStyles.footer}>
+      <Pressable style={modalStyles.button} onPress={() => onCancel?.()}>
+        <Text style={modalStyles.buttonText}>{cancelText}</Text>
+      </Pressable>
+      <Pressable style={[modalStyles.button, modalStyles.primaryButton]} onPress={() => onOk?.()}>
+        <Text style={[modalStyles.buttonText, modalStyles.primaryButtonText]}>{okText}</Text>
+      </Pressable>
+    </View>
   );
 }

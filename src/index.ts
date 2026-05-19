@@ -1,4 +1,3 @@
-export * from './asyncModalRender';
 export * from './AsyncModalRenderContext';
 export * from './types';
 export * from './useAsyncModalRender';

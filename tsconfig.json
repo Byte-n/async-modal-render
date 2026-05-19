@@ -10,20 +10,20 @@
     "target": "ES2015",
     "module": "ESNext",
     "paths": {
-      "@@/*": [
-        ".dumi/tmp/*"
-      ],
       "async-modal-render": [
+        "src"
+      ],
+      "async-modal-render-native": [
         "src"
       ]
     },
     "lib": [
-      "dom",
+      "es2015",
       "es5"
     ]
   },
   "include": [
-    ".dumirc.ts",
-    "src"
+    "src",
+    "tests"
   ]
 }

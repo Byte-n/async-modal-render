@@ -28,7 +28,7 @@ interface Ele {
 }
 
 interface PatchElement {
-  (element: ReactElement, component: ComponentType<any>, persistent?: Persistent, openField?: Persistent): VoidFunction;
+  (element: ReactElement, component: ComponentType<any>, persistent?: Persistent, openField?: Persistent): () => void;
 }
 
 interface RemoveElement {
@@ -117,7 +117,8 @@ const usePatchElement = (): [Ele[], PatchElement, RemoveElement, GetElement] => 
           if (item.openField === null || item.openField === undefined) {
             return true;
           }
-          const isOpen = item.element.props[item.openField];
+          const elementProps = item.element.props as Record<PropertyKey, unknown>;
+          const isOpen = elementProps[item.openField];
           if (visibility === 'visible' && !isOpen) return true;
           if (visibility === 'hidden' && isOpen) return true;
         }

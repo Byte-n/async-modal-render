@@ -27,7 +27,7 @@
 
 **代码对比:**
 
-```tsx | pure
+```tsx
 // Normal.tsx (传统方式)
 function NormalExample() {
   const [visible, setVisible] = useState(false); // ❌ 冗余状态
@@ -58,7 +58,7 @@ function AsyncExample() {
 **Normal:** 业务逻辑被分散在 `onClick`（打开）、`onOk`（确认）、`onCancel`（取消）等多个回调函数中，导致代码割裂，阅读困难。
 **Async Modal Render:** 使用 `await` 在一个函数内完成“打开 -> 等待操作 -> 获取结果”的完整流程，逻辑连贯。
 
-```tsx | pure
+```tsx
 // Async Modal Render: 逻辑
 const handleSubmit = async () => {
   try {
@@ -83,7 +83,7 @@ resolve/reject 逻辑。
 **Async Modal Render:** 可以直接使用原始组件，零侵入性。如果 Props 命名不标准，可以使用 `withAsyncModalPropsMapper`
 在行内动态映射，无需额外文件或组件定义。
 
-```tsx | pure
+```tsx
 // 现有的组件
 function MyModal () { ... }
 
@@ -111,7 +111,7 @@ await render(
 
 如果组件一开始就是用 `NiceModal.create` 创建的，则无法直接调用、或直接传递给第三方组件、框架使用，必须依赖 `NiceModal.show` 调用。
 
-```tsx | pure
+```tsx
 // 使用 NiceModal 函数包装组件
 const SelectUserModal = NiceModal.create((props) => {
   const modal = useModal(); // ❌ 强耦合：组件离开了 NiceModal 环境就失效了
@@ -138,7 +138,7 @@ const TempComp = withAsyncModalPropsMapper(Xxxx, ['onConfirm', 'onClose'])
 **NiceModal:** 默认行为是“保留”。关闭弹窗后，DOM 节点仍然存在，必须显式调用 `modal.remove()` 才能销毁。容易造成内存泄漏。
 **Async Modal Render:** 默认行为是“销毁”。`render` Promise 结束后，库会自动卸载组件并清理 DOM。天然杜绝内存泄漏。默认销毁保证了每次打开都是全新的状态 (Reset)。同时提供了显式的持久化选项 (`persistent` key)
 ，控制权更精准。
-```tsx | pure
+```tsx
 // NiceModal
 const SelectUserModal = NiceModal.create((props) => {
   const modal = useModal(); // ❌ 强耦合：组件离开了 NiceModal 环境就失效了
@@ -174,7 +174,7 @@ destroy({ persistent: 'unique-modal' })
 - **入参类型约束**：自动检查传入的 `props` 是否符合组件定义。
 - **返回值类型推导**：`await render(...)` 的返回值类型会自动推导为组件回调函数的参数类型。
 
-```tsx | pure
+```tsx
 // NiceModal.show<Result, Component Props, Props>
 // 通过第一个泛型指定返回值类型，该类型与modal.resolve的返类型无约束，
 // 即modal.resolve('string') 改成 modal.resolve(90), 这里的引用也不会触发TS的类型校验错误

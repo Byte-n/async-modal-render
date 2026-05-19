@@ -13,7 +13,7 @@ export type ReturnType<D extends AsyncModalProps, Quiet extends QuietType = unde
 export type ComputeQuiet<Quiet extends QuietType = undefined, R = never> = Quiet extends true ? R | undefined : R;
 
 interface AsyncModalOptions<Quiet extends QuietType = undefined> {
-  onClose: VoidFunction;
+  onClose: () => void;
   quiet?: Quiet;
 }
 

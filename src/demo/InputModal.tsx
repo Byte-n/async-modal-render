@@ -1,48 +1,37 @@
-import React, { useState } from 'react';
-import { AsyncModalProps } from 'async-modal-render';
-import Modal from './Modal';
+import React from 'react';
+import { TextInput } from 'react-native';
+import type { AsyncModalProps } from '../types';
+import { Modal } from './Modal';
+import { modalStyles } from './modalStyles';
 
 export interface InputModalProps extends AsyncModalProps {
   open?: boolean;
   title?: string;
   placeholder?: string;
   defaultValue?: string;
-  onOk?: (v: string) => void;
-  onCancel?: (v: string) => void;
+  onOk?: (value: string) => void;
+  onCancel?: (value?: string) => void;
 }
 
-const InputModal: React.FC<InputModalProps> = ({
+export function InputModal({
   open,
   title = '请输入',
   placeholder = '请输入内容',
   defaultValue = '',
   onOk,
   onCancel,
-}) => {
-  const [value, setValue] = useState(defaultValue);
+}: InputModalProps) {
+  const [value, setValue] = React.useState(defaultValue);
 
   return (
-    <Modal
-      open={open}
-      title={title}
-      onOk={() => onOk?.(value)}
-      onCancel={onCancel}
-    >
-      <input
-        style={{
-          width: '100%',
-          padding: '4px 11px',
-          borderRadius: '4px',
-          border: '1px solid #d9d9d9',
-          outline: 'none',
-        }}
+    <Modal open={open} title={title} onOk={() => onOk?.(value)} onCancel={onCancel}>
+      <TextInput
+        style={modalStyles.input}
         placeholder={placeholder}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChangeText={setValue}
         autoFocus
       />
     </Modal>
   );
-};
-
-export default InputModal;
+}

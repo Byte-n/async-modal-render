@@ -85,7 +85,7 @@ export function useAsyncModalRender() {
   // 创建 render 的工厂函数
   const renderFactory = useCallback<AsyncModalRenderFactory>(
     (Comp, props, options) => {
-      const unmounts: VoidFunction[] = [];
+      const unmounts: Array<() => void> = [];
       const func = () => {
         const promise = render(Comp, props, options);
         unmounts.push(promise.destroyModal);

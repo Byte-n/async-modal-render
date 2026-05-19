@@ -1,6 +1,8 @@
 import type { ComponentType, ReactElement } from 'react';
 import type { ReturnType } from './utils/asyncModalRenderImp';
 
+export type DestroyModal = () => void;
+
 /**
  * 弹窗组件的基础属性接口
  * 所有通过 async-modal-render 调用的组件都应该符合此接口（或通过 mapper 适配）
@@ -84,7 +86,7 @@ export interface AsyncModalRender {
     Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: AsyncModalRenderOptions<D, Quiet>,
-  ): ComputeResult<D, Quiet> & { destroyModal: VoidFunction };
+  ): ComputeResult<D, Quiet> & { destroyModal: DestroyModal };
 }
 
 /**
@@ -97,7 +99,7 @@ export interface AsyncModalRenderPersistent {
     props: ComputeAsyncModalProps<D>,
     options: Omit<AsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'> &
       Required<Pick<AsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'>>,
-  ): ComputeResult<D, Quiet> & { destroyModal: VoidFunction };
+  ): ComputeResult<D, Quiet> & { destroyModal: DestroyModal };
 }
 
 /**
@@ -122,7 +124,7 @@ export interface AsyncModalRenderQuiet {
     Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: Omit<AsyncModalRenderOptions<D, true>, 'quiet'>,
-  ): ComputeResult<D, true> & { destroyModal: VoidFunction };
+  ): ComputeResult<D, true> & { destroyModal: DestroyModal };
 }
 
 /**
@@ -147,12 +149,12 @@ export type RenderFactory<D extends AsyncModalProps, Quiet extends QuietType = u
   D,
   Quiet
 > & {
-  destroyModal: VoidFunction;
+  destroyModal: DestroyModal;
 }) & {
   /**
    * 销毁该工厂产生的所有弹窗实例（主要用于清理）
    */
-  destroyModal: VoidFunction;
+  destroyModal: DestroyModal;
 };
 
 /**
@@ -241,7 +243,7 @@ export interface ContextAsyncModalRenderPersistent {
     props: ComputeAsyncModalProps<D>,
     options: Omit<ContextAsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'> &
       Required<Pick<ContextAsyncModalRenderOptions<D, Quiet>, 'openField' | 'persistent'>>,
-  ): ComputeResult<D, Quiet> & { destroyModal: VoidFunction };
+  ): ComputeResult<D, Quiet> & { destroyModal: DestroyModal };
 }
 
 export interface ContextAsyncModalRenderPersistentFactory {
@@ -258,7 +260,7 @@ export interface ContextAsyncModalRenderQuiet {
     Comp: ComponentType<D>,
     props?: ComputeAsyncModalProps<D>,
     options?: Omit<ContextAsyncModalRenderOptions<D, true>, 'quiet'>,
-  ): ComputeResult<D, true> & { destroyModal: VoidFunction };
+  ): ComputeResult<D, true> & { destroyModal: DestroyModal };
 }
 
 export interface ContextAsyncModalRenderQuietFactory {

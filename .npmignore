@@ -2,9 +2,11 @@
 src/
 docs/
 docs-dist/
+docs-site/
 
 # Build configs
-.dumirc.ts
+docusaurus.config.cjs
+sidebars.cjs
 .fatherrc.ts
 tsconfig.json
 

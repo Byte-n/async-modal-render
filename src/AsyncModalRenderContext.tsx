@@ -3,7 +3,7 @@ import { AsyncModalContext, UseAsyncModalRenderReturn } from './types';
 import { useAsyncModalRender } from './useAsyncModalRender';
 
 const DEFAULT_FUNC = () => {
-  throw Error(`AsyncModalContext must be used within createRoot.`);
+  throw Error(`AsyncModalContext must be used within AsyncModalRenderProvider.`);
 };
 
 export const AsyncModalRenderContext = React.createContext<Omit<UseAsyncModalRenderReturn, 'holder'>>({
@@ -63,10 +63,10 @@ export function useAsyncModalRenderContext(): AsyncModalContext {
   const { render, renderFactory, destroy, renderPersistentFactory, renderQuiet, renderPersistent, renderQuietFactory } = useContext(AsyncModalRenderContext);
 
   // 优化1：使用 Set 替代数组，提升删除性能
-  const unmountCallbacks = useRef<Set<VoidFunction>>(new Set());
+  const unmountCallbacks = useRef<Set<() => void>>(new Set());
 
   // 包装 destroyModal，添加防重复和自动清理逻辑
-  const wrapDestroyModal = useCallback(<T extends { destroyModal: VoidFunction }>(promise: T) => {
+  const wrapDestroyModal = useCallback(<T extends { destroyModal: () => void }>(promise: T) => {
     const originalDestroy = promise.destroyModal;
 
     let isDestroyed = false;

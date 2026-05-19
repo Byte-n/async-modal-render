@@ -1,170 +1,116 @@
-# async-modal-render
+# async-modal-render-native
 
-[![npm version](https://img.shields.io/npm/v/async-modal-render.svg)](https://www.npmjs.com/package/async-modal-render)
-[![license](https://img.shields.io/npm/l/async-modal-render.svg)](https://github.com/Byte-n/async-modal-render/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/async-modal-render-native.svg)](https://www.npmjs.com/package/async-modal-render-native)
+[![license](https://img.shields.io/npm/l/async-modal-render-native.svg)](https://github.com/Byte-n/async-modal-render-native/blob/main/LICENSE)
 
-一个将 React 模态框操作 Promise 化的轻量级工具库，让你可以使用 `async/await` 语法优雅地处理模态框交互。
+React Native 弹窗 Promise 化工具库。它保留 async-modal-render 的 Hook / Context 调用模型，让弹窗组件通过 `onOk` resolve、`onCancel` reject，并用 `async/await` 编排后续流程。
 
-[使用文档](https://byte-n.github.io/async-modal-render)
-
-## 为什么需要 async-modal-render？
-
-### 传统 Modal 的痛点
-
-在传统的 Modal 使用方式中，我们需要通过回调函数来处理用户的操作，这导致代码逻辑分散，难以维护：
-
-```tsx
-// ❌ 传统方式：代码逻辑分散，难以阅读
-function TraditionalWay() {
-  const [visible, setVisible] = useState(false);
-
-  const handleClick = () => {
-    setVisible(true);
-  };
-
-  // 确认的回调逻辑 - 分散在另一个地方
-  const handleOk = async (formData) => {
-    try {
-      await api.submit(formData);
-      message.success('提交成功');
-    } catch (error) {
-      message.error('提交失败');
-    } finally {
-      setVisible(false);
-    }
-  };
-
-  // 取消的回调逻辑 - 又在另一个地方
-  const handleCancel = () => {
-    setVisible(false);
-  };
-
-  return (
-    <>
-      <Button onClick={handleClick}>打开弹窗</Button>
-      <Modal visible={visible} onOk={handleOk} onCancel={handleCancel}>
-        <Form />
-      </Modal>
-    </>
-  );
-}
-```
-
-### async-modal-render 的优势
-
-使用 async-modal-render，代码逻辑集中在一处，清晰易懂：
-
-```tsx
-import { asyncModalRender, AsyncModalRenderCancelError } from 'async-modal-render';
-
-// ✅ async-modal-render 方式：逻辑集中，代码清晰
-function AsyncModalWay() {
-  const handleClick = async () => {
-    try {
-      // 弹窗逻辑、确认逻辑、后续处理都在一起
-      const formData = await asyncModalRender(FormModal, { title: '填写表单' });
-
-      // 用户点击确认后才会执行到这里
-      await api.submit(formData);
-      message.success('提交成功');
-
-      // 继续后续操作
-    } catch (error) {
-      // 用户点击取消或发生错误都会进入这里
-      if (error instanceof AsyncModalRenderCancelError) {
-        console.log('用户取消了操作');
-      } else {
-        message.error('提交失败');
-      }
-    }
-  };
-
-  return <Button onClick={handleClick}>打开弹窗</Button>;
-}
-```
-
-### 对比总结
-
-| 特性 | 传统 Modal | async-modal-render |
-|------|-----------|-----------------|
-| 代码组织 | 回调函数分散在多处 | async/await 集中处理 |
-| 可读性 | 需要跳转查看不同回调 | 从上到下线性阅读 |
-| 流程控制 | 需要状态管理 | Promise 自然流转 |
-| 错误处理 | 分散在各个回调 | try/catch 统一处理 |
-| 异步操作 | 回调嵌套 | async/await 扁平化 |
-
-## 特性
-
-- 🎯 **Promise 化**：使用 async/await 处理模态框操作
-- 🪶 **轻量级**：最小依赖，体积小
-- 📦 **TypeScript**：完整的 TypeScript 支持
-- ⚛️ **React**：支持 React 16.8+
-- 🔧 **灵活**：兼容任何模态框组件库（Ant Design、Material-UI 等）
+RN 版本不提供 Web 的静态 `asyncModalRender()` 挂载 API；请使用 `AsyncModalRenderProvider` 或 `useAsyncModalRender()` 的 `holder`。
 
 ## 安装
 
 ```bash
-npm install async-modal-render
+npm install async-modal-render-native
 ```
-
-或
 
 ```bash
-yarn add async-modal-render
+yarn add async-modal-render-native
 ```
-
-或
 
 ```bash
-pnpm add async-modal-render
+pnpm add async-modal-render-native
 ```
 
-## 示例
+## 基本使用
 
 ```tsx
-// ========== 创建一个模态框组件 ==========
-function ConfirmModal({ onOk, onCancel, message }) {
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
+import {
+  AsyncModalProps,
+  AsyncModalRenderProvider,
+  useAsyncModalRenderContext,
+} from 'async-modal-render-native';
+
+interface ConfirmModalProps extends AsyncModalProps {
+  message: string;
+  onOk?: (value: 'confirmed') => void;
+}
+
+function ConfirmModal({ message, onOk, onCancel }: ConfirmModalProps) {
   return (
-    <div className="modal">
-      <p>{message}</p>
-      <button onClick={() => onOk('confirmed')}>确认</button>
-      <button onClick={onCancel}>取消</button>
-    </div>
+    <View>
+      <Text>{message}</Text>
+      <Pressable onPress={() => onOk?.('confirmed')}>
+        <Text>确认</Text>
+      </Pressable>
+      <Pressable onPress={() => onCancel?.()}>
+        <Text>取消</Text>
+      </Pressable>
+    </View>
   );
 }
 
-// ========== 在任何地方使用 async/await 调用 ==========
-import { asyncModalRender, AsyncModalRenderCancelError } from 'async-modal-render';
+function DeleteButton() {
+  const { render } = useAsyncModalRenderContext();
 
-async function deleteUser(userId) {
-  try {
-    // 等待用户确认
-    const result = await asyncModalRender(ConfirmModal, {
-      message: '确定要删除这个用户吗？'
+  const handleDelete = async () => {
+    const result = await render(ConfirmModal, {
+      message: '确定要删除吗？',
     });
 
-    // 用户点击了确认，继续执行
-    await api.delete(`/users/${userId}`);
-    message.success('删除成功！');
-  } catch (error) {
-    // 用户点击了取消或关闭了弹窗
-    if (error instanceof AsyncModalRenderCancelError) {
-      message.info('已取消');
+    if (result === 'confirmed') {
+      await api.delete();
     }
-    // 其它错误
-  }
+  };
+
+  return (
+    <Pressable onPress={handleDelete}>
+      <Text>删除</Text>
+    </Pressable>
+  );
+}
+
+export function App() {
+  return (
+    <AsyncModalRenderProvider>
+      <DeleteButton />
+    </AsyncModalRenderProvider>
+  );
 }
 ```
 
-就是这么简单！不需要状态管理，不需要回调地狱，只需要简单的 async/await 流程。
+## Hook 模式
 
-更多用法见：[文档](https://byte-n.github.io/async-modal-render)
+没有全局 Provider 时，可以在组件内使用 `useAsyncModalRender()`。必须把 `holder` 渲染到 JSX 中，否则弹窗不会显示。
 
+```tsx
+const { render, holder } = useAsyncModalRender();
 
-## TODO
+return (
+  <View>
+    <Pressable onPress={() => render(ConfirmModal, { message: '继续？' })}>
+      <Text>打开</Text>
+    </Pressable>
+    {holder}
+  </View>
+);
+```
 
-* [x] `useAsyncModalRenderContext` 的 `render` / `renderFactory` 的 `AsyncModalRenderOptions` 添加 `destroyStrategy?: 'hook' | 'context'`
-  * `hook`: `useAsyncModalRenderContext` 当前组件卸载后销毁
-  * `context`: `useAsyncModalRenderContext` 当前组件卸载后不销毁, 随着 `AsyncModalRenderProvider` 销毁
-* [x] `UseAsyncModalRenderReturn` 添加一个 `renderQuiet`/`renderSafe` 函数。此函数在 `onCancel` 时不抛出错误，直接返回 `undefined`
-* [ ] 支持类组件的 Context 环境调用
+## API
+
+- `useAsyncModalRender()`
+- `AsyncModalRenderProvider`
+- `useAsyncModalRenderContext()`
+- `render`
+- `renderQuiet`
+- `renderPersistent`
+- `renderFactory`
+- `renderQuietFactory`
+- `renderPersistentFactory`
+- `destroy`
+- `withAsyncModalPropsMapper`
+- `AsyncModalRenderCancelError`
+- `PersistentComponentConflictError`
+
+`renderQuiet` 在取消时 resolve `undefined`。`renderPersistent` 需要传入 `persistent` 和 `openField`，关闭后保留组件实例并通过 `openField` 控制显隐。
